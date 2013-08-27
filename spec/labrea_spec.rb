@@ -41,16 +41,16 @@ describe Labrea do
   describe "verify", 'tgz' do
     context "dry-run" do
       it "should not update any files" do
-	changeset, err_count = @labrea.verify(true)
-	err_count.should eql(0)
+	changeset = @labrea.verify(true)
 	changeset.should_not == nil
+	changeset.length.should eql(0)
       end
       
       it "should see the change for test_tgz.txt" do
 	File.delete("test/install/test_tgz.txt")
-	changeset, err_count = @labrea.verify(true)
+	changeset = @labrea.verify(true)
 	changeset[0].should eql("test_tgz.txt")
-	err_count.should eql(1)
+	changeset.length.should eql(1)
 	File.exists?("test/install/test_tgz.txt").should be_false
       end
     end
@@ -58,14 +58,14 @@ describe Labrea do
     context "verify" do      
       it "should verify that a file has changed" do
 	File.delete("test/install/test_tgz.txt") if File.exists?("test/install/test_tgz.txt")
-	changeset, err_count = @labrea.verify()
+	changeset = @labrea.verify()
 	changeset[0].should eql("test_tgz.txt")
-	err_count.should eql(1)
+	changeset.length.should eql(1)
       end
       
       it "should verify that a file has not been changed" do
-	changeset, err_count = @labrea.verify()
-	err_count.should eql(0)
+	changeset = @labrea.verify()
+	changeset.length.should eql(0)
       end
     end
   end

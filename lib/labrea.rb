@@ -47,7 +47,7 @@ class Labrea
   # Verification of binary archive
   def verify(testmode=false)
     @changeset.clear
-    err_count = 0
+    
     # Read checksums from file
     checksums = Hash.new
     File.open("#{@install_dir}/checksum.txt", "r+") do |file|
@@ -57,16 +57,12 @@ class Labrea
     checksums.each_pair do |k,v|
       Dir.chdir(@install_dir) do |path|
 	if sha1sum(k) != v
-# 	  puts "#{k} verification: false, extracting file from archive"
-	  err_count += 1
 	  extract_file(k, testmode)
-	else
-# 	  puts "#{k} verification: true, nothing to do"
 	end
       end
     end
     
-    return @changeset, err_count
+    return @changeset
   end
   
   def filetype(filename)
