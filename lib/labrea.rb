@@ -8,21 +8,24 @@ class Labrea
     @install_dir	= install_dir
     @config	 	= config
     @working_dir	= Dir.pwd()
+    @changeset		= Array.new
   end
   
   # Installation of binary archive
-  def install
-    extract_files()
+  def install(testmode=false)
+    @changeset.clear
+    extract_files(testmode)
     
     # Generate checksums and add to hash
     checksums = Hash.new
     if File.exists?(@install_dir)
       Dir.chdir(@install_dir) do |path|
 	Dir.glob("**/*.*") do |file|
+	  @changeset << file.to_s
 	  if File.file?(file)
 	    if !@config.include? file
 	      checksums[file] = sha1sum(file)
-	      puts checksums
+# 	      puts checksums
 	    end
 	  end
 	end
@@ -33,14 +36,17 @@ class Labrea
     File.open("#{@install_dir}/checksum.txt", "w+") do |file|
       file.puts JSON.generate(checksums)
     end
+    
+    return @changeset
   end
   
   # Update of binary archive
-  def update
+  def update(testmode=false)
   end
   
   # Verification of binary archive
-  def verify
+  def verify(testmode=false)
+    @changeset.clear
     err_count = 0
     # Read checksums from file
     checksums = Hash.new
@@ -51,16 +57,16 @@ class Labrea
     checksums.each_pair do |k,v|
       Dir.chdir(@install_dir) do |path|
 	if sha1sum(k) != v
-	  puts "#{k} verification: false, extracting file from archive"
+# 	  puts "#{k} verification: false, extracting file from archive"
 	  err_count += 1
-	  extract_file(k)
+	  extract_file(k, testmode)
 	else
-	  puts "#{k} verification: true, nothing to do"
+# 	  puts "#{k} verification: true, nothing to do"
 	end
       end
     end
     
-    return err_count
+    return @changeset, err_count
   end
   
   def filetype(filename)
@@ -83,28 +89,32 @@ class Labrea
     return :unknown
   end
 
-  def extract_files()
+  def extract_files(testmode)
     Dir.chdir(@working_dir) do |path|
+      @changeset << @install_dir
+      
       case filetype(@filename)
       when :tgz
-	`tar -xzvf #{@filename} -C #{@install_dir}`
+	`tar -xzvf #{@filename} -C #{@install_dir}` unless testmode
       when :zip
-	`unzip #{@filename} -d #{@install_dir}`
+	`unzip #{@filename} -d #{@install_dir}` unless testmode
       when :bz2
-	`tar -xjvf #{@filename} -C #{@install_dir}`
+	`tar -xjvf #{@filename} -C #{@install_dir}` unless testmode
       end
     end
   end
   
-  def extract_file(file)
+  def extract_file(file, testmode)
     Dir.chdir(@working_dir) do |path|
+      @changeset << file.to_s
+      
       case filetype(@filename)
       when :tgz
-	`tar -xzvf #{@filename} -C #{@install_dir} #{file}`
+	`tar -xzvf #{@filename} -C #{@install_dir} #{file}` unless testmode
       when :zip
-	`unzip #{@filename} -d #{@install_dir} #{file}`
+	`unzip #{@filename} -d #{@install_dir} #{file}` unless testmode
       when :bz2
-	`tar -xjvf #{@filename} -C #{@install_dir} #{file}`
+	`tar -xjvf #{@filename} -C #{@install_dir} #{file}` unless testmode
       end
     end
   end
