@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 require 'digest/sha1'
 require 'json'
 
@@ -10,12 +13,12 @@ class Labrea
     @working_dir	= Dir.pwd()
     @changeset		= Array.new
   end
-  
+
   # Installation of binary archive
   def install(testmode=false)
     @changeset.clear
     extract_files(testmode)
-    
+
     # Generate checksums and add to hash
     checksums = Hash.new
     if File.exists?(@install_dir)
@@ -25,7 +28,6 @@ class Labrea
 	  if File.file?(file)
 	    if !@config.include? file
 	      checksums[file] = sha1sum(file)
-# 	      puts checksums
 	    end
 	  end
 	end
@@ -36,24 +38,24 @@ class Labrea
     File.open("#{@install_dir}/checksum.txt", "w+") do |file|
       file.puts JSON.generate(checksums)
     end
-    
+
     return @changeset
   end
-  
+
   # Update of binary archive
   def update(testmode=false)
   end
-  
+
   # Verification of binary archive
   def verify(testmode=false)
     @changeset.clear
-    
+
     # Read checksums from file
     checksums = Hash.new
     File.open("#{@install_dir}/checksum.txt", "r+") do |file|
       checksums = JSON.load(file)
     end
-    
+
     checksums.each_pair do |k,v|
       Dir.chdir(@install_dir) do |path|
 	if sha1sum(k) != v
@@ -61,34 +63,34 @@ class Labrea
 	end
       end
     end
-    
+
     return @changeset
   end
-  
+
   def filetype(filename)
-    filename.match('.*\.tgz') do |m|
+    if filename.match('.*\.tgz')
       return :tgz
     end
-    
-    filename.match('.*\.tar\.gz') do |m|
+
+    if filename.match('.*\.tar\.gz')
       return :tgz
     end
-    
-    filename.match('.*\.zip') do |m|
+
+    if filename.match('.*\.zip')
       return :zip
     end
-    
-    filename.match('.*\.bz2') do |m|
+
+    if filename.match('.*\.bz2')
       return :bz2
     end
-    
+
     return :unknown
   end
 
   def extract_files(testmode)
     Dir.chdir(@working_dir) do |path|
       @changeset << @install_dir
-      
+
       case filetype(@filename)
       when :tgz
 	`tar -xzvf #{@filename} -C #{@install_dir}` unless testmode
@@ -99,11 +101,11 @@ class Labrea
       end
     end
   end
-  
+
   def extract_file(file, testmode)
     Dir.chdir(@working_dir) do |path|
       @changeset << file.to_s
-      
+
       case filetype(@filename)
       when :tgz
 	`tar -xzvf #{@filename} -C #{@install_dir} #{file}` unless testmode
@@ -114,12 +116,12 @@ class Labrea
       end
     end
   end
-  
+
   def sha1sum(file)
       if File.file?(file)
 	return Digest::SHA1.hexdigest File.read(file)
       end
-      
+
       return false
   end
 end
