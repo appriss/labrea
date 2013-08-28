@@ -9,5 +9,6 @@ Gem::Specification.new do |s|
   s.files	= ["lib/labrea.rb"]
   s.homepage	= 'https://github.com/dsledge/labrea'
   s.license	= 'GPL3'
-  s.add_dependency('json', '>=1.8.0')
+  s.add_dependency('json')
+  s.add_dependency('bundler')
 end

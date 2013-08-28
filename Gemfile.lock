@@ -1,3 +1,10 @@
+PATH
+  remote: .
+  specs:
+    labrea (0.0.1)
+      bundler
+      json
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -17,4 +24,5 @@ PLATFORMS
 
 DEPENDENCIES
   json
+  labrea!
   rspec
