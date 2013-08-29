@@ -4,9 +4,12 @@ require 'fileutils'
 
 describe Labrea do
   before(:all) do
-    @labrea = Labrea.new("test/source/test.tgz", "test/install", ['checksum.txt'])
+    @labrea = Labrea.new("test/source/test.tgz", "test/install", ['checksum.txt', 'dir1/test_tgz.txt'])
     @labreaZip = Labrea.new("test/source/test.zip", "test/install", ['checksum.txt'])
     @changeset = nil
+    @file1 = "test/install/test_tgz.txt"
+    @file2 = "test/install/dir1/test_tgz.txt"
+    @file3 = "test/install/dir2/test_tgz.txt"
   end
 
   after(:all) do
@@ -20,20 +23,23 @@ describe Labrea do
   describe "install, tgz" do
     FileUtils.rm_rf("test/install")
     Dir.mkdir("test/install") unless File.exists?("test/install")
-    file = "test/install/test_tgz.txt"
 
     context "dry-run" do
       it "should not install the package" do
 	@labrea.install(true)
-	File.exist?(file).should be_false
+	File.exist?(@file1).should be_false
+	File.exist?(@file2).should be_false
+	File.exist?(@file3).should be_false
       end
     end
 
     context "install", 'tgz' do
-      it "should extract the file test/install/test_tgz.txt and have a valid changeset" do
+      it "should extract the files [#{@file1},#{@file2},#{@file3}] and have a valid changeset" do
 	@changeset = @labrea.install()
 	@changeset.should_not == nil
-	File.exist?(file).should be_true
+	File.exist?(@file1).should be_true
+	File.exist?(@file2).should be_true
+	File.exist?(@file3).should be_true
       end
     end
   end
@@ -53,6 +59,14 @@ describe Labrea do
 	changeset.length.should eql(1)
 	File.exists?("test/install/test_tgz.txt").should be_false
       end
+
+      it "should not see the change for dir1/test_tgz.txt" do
+	File.delete("test/install/dir1/test_tgz.txt") if File.exists?("test/install/dir1/test_tgz.txt")
+	changeset = @labrea.verify(true)
+	changeset[0].should eql("test_tgz.txt")
+	changeset.length.should eql(1)
+	File.exists?("test/install/dir1/test_tgz.txt").should be_false
+      end
     end
 
     context "verify" do
@@ -61,6 +75,12 @@ describe Labrea do
 	changeset = @labrea.verify()
 	changeset[0].should eql("test_tgz.txt")
 	changeset.length.should eql(1)
+      end
+
+      it "should not verify that a file has changed" do
+	File.delete("test/install/dir1/test_tgz.txt") if File.exists?("test/install/dir1/test_tgz.txt")
+	changeset = @labrea.verify()
+	changeset.length.should eql(0)
       end
 
       it "should verify that a file has not been changed" do
