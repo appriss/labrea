@@ -6,10 +6,10 @@ require 'json'
 
 class Labrea
   # Class initialization
-  def initialize(filename, install_dir, config)
+  def initialize(filename, install_dir, exclude)
     @filename		= filename
     @install_dir	= install_dir
-    @config	 	= config
+    @exclude 		= exclude
     @working_dir	= Dir.pwd()
     @changeset		= Array.new
   end
@@ -26,7 +26,7 @@ class Labrea
 	Dir.glob("**/*.*") do |file|
 	  @changeset << file.to_s
 	  if File.file?(file)
-	    if !@config.include? file
+	    if !@exclude.include? file
 	      checksums[file] = sha1sum(file)
 	    end
 	  end
