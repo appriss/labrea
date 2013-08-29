@@ -26,6 +26,7 @@ class Labrea
 	Dir.glob("**/*.*") do |file|
 	  @changeset << file.to_s
 	  if File.file?(file)
+            puts file
 	    if !@exclude.include? file
 	      checksums[file] = sha1sum(file)
 	    end
@@ -35,7 +36,7 @@ class Labrea
     end
 
     # Write out checksum file
-    File.open("#{@install_dir}/checksum.txt", "w+") do |file|
+    File.open("#{@install_dir}/checksum.json", "w+") do |file|
       file.puts JSON.generate(checksums)
     end
 
@@ -52,7 +53,7 @@ class Labrea
 
     # Read checksums from file
     checksums = Hash.new
-    File.open("#{@install_dir}/checksum.txt", "r+") do |file|
+    File.open("#{@install_dir}/checksum.json", "r+") do |file|
       checksums = JSON.load(file)
     end
 
