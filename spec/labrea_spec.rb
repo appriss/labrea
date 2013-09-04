@@ -5,7 +5,7 @@ require 'fileutils'
 describe Labrea do
   before(:all) do
     @labrea = Labrea.new("test/source/test.tgz", "test/install", ['checksum.json', 'dir1/test_tgz.txt'])
-    @labreaZip = Labrea.new("test/source/test.zip", "test/install", ['checksum.json'])
+    @labrea2 = Labrea.new("test/source/test.zip", "test/install", ['checksum.json', 'dir2/test_tgz.txt'])
     @changeset = nil
     @file1 = "test/install/test_tgz.txt"
     @file2 = "test/install/dir1/test_tgz.txt"
@@ -85,6 +85,12 @@ describe Labrea do
 
       it "should verify that a file has not been changed" do
 	changeset = @labrea.verify()
+	changeset.length.should eql(0)
+      end
+
+      it "should not verify the new file added to the exclude list" do
+	File.delete("test/install/dir2/test_tgz.txt") if File.exists?("test/install/dir2/test_tgz.txt")
+	changeset = @labrea2.verify()
 	changeset.length.should eql(0)
       end
     end

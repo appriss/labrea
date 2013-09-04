@@ -53,15 +53,17 @@ class Labrea
 
     # Read checksums from file
     checksums = Hash.new
-    File.open("#{@install_dir}/checksum.json", "r+") do |file|
+    File.open("#{@install_dir}/checksum.json", "r") do |file|
       checksums = JSON.load(file)
     end
 
     checksums.each_pair do |k,v|
-      Dir.chdir(@install_dir) do |path|
-	if sha1sum(k) != v
-	  extract_file(k, testmode)
-	end
+      if !@exclude.include? k
+      	Dir.chdir(@install_dir) do |path|
+	  if sha1sum(k) != v
+	    extract_file(k, testmode)
+	  end
+      	end
       end
     end
 
