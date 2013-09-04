@@ -5,7 +5,7 @@ require 'fileutils'
 describe Labrea do
   before(:all) do
     @labrea = Labrea.new("test/source/test.tgz", "test/install", ['checksum.json', 'dir1/test_tgz.txt'])
-    @labrea2 = Labrea.new("test/source/test.zip", "test/install", ['checksum.json', 'dir2/test_tgz.txt'])
+    @labrea2 = Labrea.new("test/source/test.zip", "test/install", ['checksum.json', 'dir1/test_tgz.txt', 'dir2/test_tgz.txt'])
     @changeset = nil
     @file1 = "test/install/test_tgz.txt"
     @file2 = "test/install/dir1/test_tgz.txt"
