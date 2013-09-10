@@ -26,7 +26,6 @@ class Labrea
 	Dir.glob("**/*.*") do |file|
 	  @changeset << file.to_s
 	  if File.file?(file)
-            puts file
 	    if !@exclude.include? file
 	      checksums[file] = sha1sum(file)
 	    end
@@ -96,11 +95,11 @@ class Labrea
 
       case filetype(@filename)
       when :tgz
-	`tar -xzvf #{@filename} -C #{@install_dir}` unless testmode
+	`tar -xzf #{@filename} -C #{@install_dir}` unless testmode
       when :zip
 	`unzip #{@filename} -d #{@install_dir}` unless testmode
       when :bz2
-	`tar -xjvf #{@filename} -C #{@install_dir}` unless testmode
+	`tar -xjf #{@filename} -C #{@install_dir}` unless testmode
       end
     end
   end
