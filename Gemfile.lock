@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    labrea (0.0.1)
+    labrea (0.0.2)
       bundler
       json
 

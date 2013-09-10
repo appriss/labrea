@@ -111,11 +111,11 @@ class Labrea
 
       case filetype(@filename)
       when :tgz
-	`tar -xzvf #{@filename} -C #{@install_dir} #{file}` unless testmode
+	`tar -xzf #{@filename} -C #{@install_dir} #{file}` unless testmode
       when :zip
-	`unzip #{@filename} -d #{@install_dir} #{file}` unless testmode
+	`unzip -q #{@filename} -d #{@install_dir} #{file}` unless testmode
       when :bz2
-	`tar -xjvf #{@filename} -C #{@install_dir} #{file}` unless testmode
+	`tar -xjf #{@filename} -C #{@install_dir} #{file}` unless testmode
       end
     end
   end
