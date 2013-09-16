@@ -6,6 +6,7 @@ describe Labrea do
   before(:all) do
     @labrea = Labrea.new("test/source/test.tgz", "test/install", :exclude => ['checksum.json', 'dir1/test_tgz.txt'])
     @labrea2 = Labrea.new("test/source/test.zip", "test/install", :exclude => ['checksum.json', 'dir1/test_tgz.txt', 'dir2/test_tgz.txt'])
+    @labrea3 = Labrea.new("test/source/test.tgz", "test/install", :checksum_file => 'checkmate.json', :exclude => ['checksum.json', 'dir1/test_tgz.txt'])
     @changeset = nil
     @file1 = "test/install/test_tgz.txt"
     @file2 = "test/install/dir1/test_tgz.txt"
@@ -30,6 +31,7 @@ describe Labrea do
 	File.exist?(@file1).should be_false
 	File.exist?(@file2).should be_false
 	File.exist?(@file3).should be_false
+	File.exist?('test/install/checksum.json').should be_true
       end
     end
 
@@ -40,6 +42,18 @@ describe Labrea do
 	File.exist?(@file1).should be_true
 	File.exist?(@file2).should be_true
 	File.exist?(@file3).should be_true
+	File.exist?('test/install/checksum.json').should be_true
+      end
+    end
+
+    context "custom checksum_file" do
+      it "should use the custom checksum file" do
+	@changeset = @labrea3.install()
+	@changeset.should_not == nil
+	File.exist?(@file1).should be_true
+	File.exist?(@file2).should be_true
+	File.exist?(@file3).should be_true
+	File.exist?('test/install/checkmate.json').should be_true
       end
     end
   end
