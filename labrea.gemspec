@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name	= 'labrea'
-  s.version	= '0.0.4'
+  s.version	= '0.0.5'
   s.date	= '2013-09-10'
   s.summary	= "Binary Installation Utility"
   s.description	= "A binary installation utility"
