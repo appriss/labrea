@@ -138,7 +138,7 @@ class Labrea
   end
 
   def checksum_fqn
-    if @checksum_file =~ /^#{File::PATH_SEPARATOR}/
+    if @checksum_file =~ /^#{File::SEPARATOR}/
       @checksum_file
     else
       File.join(@install_dir,@checksum_file)
