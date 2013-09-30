@@ -33,21 +33,25 @@ class Labrea
     checksums = Hash.new
     if File.exists?(@install_dir)
       Dir.chdir(@install_dir) do |path|
-	Dir.glob("**/*.*") do |file|
-	  @changeset << file.to_s
-	  if File.file?(file)
-	    if !@exclude.include? file
-	      checksums[file] = sha1sum(file)
-	    end
-	  end
-	end
-      end
+        @changeset.each do |file|
+          checksums[file] = sha1sum(file) unless @exclude.include? file
+        end
+      end 
+    #	Dir.glob("**/*.*") do |file|
+    #	  @changeset << file.to_s
+    #	  if File.file?(file)
+    #	    if !@exclude.include? file
+    #	      checksums[file] = sha1sum(file)
+    #	    end
+    #	  end
+    #	end
+    #  end
     end
-
+    
     # Write out checksum file
     File.open(checksum_fqn, "w+") do |file|
       file.puts JSON.generate(checksums)
-    end
+    end unless testmode
 
     return @changeset
   end
@@ -101,16 +105,17 @@ class Labrea
 
   def extract_files(testmode)
     Dir.chdir(@working_dir) do |path|
-      @changeset << @install_dir
 
       case filetype(@filename)
       when :tgz
-	`tar -xzf #{@filename} -C #{@install_dir}` unless testmode
+	output = `tar -xvzf #{@filename} -C #{@install_dir} 2>/dev/null` unless testmode
       when :zip
 	`unzip #{@filename} -d #{@install_dir}` unless testmode
+        output = `zipinfo -1 #{@filename}`
       when :bz2
-	`tar -xjf #{@filename} -C #{@install_dir}` unless testmode
+	output = `tar -xvjf #{@filename} -C #{@install_dir} 2>/dev/null` unless testmode
       end
+      @changeset |= output.split("\n") if output
     end
   end
 

@@ -31,7 +31,7 @@ describe Labrea do
 	File.exist?(@file1).should be_false
 	File.exist?(@file2).should be_false
 	File.exist?(@file3).should be_false
-	File.exist?('test/install/checksum.json').should be_true
+	File.exist?('test/install/checksum.json').should be_false
       end
     end
 
