@@ -1,6 +1,6 @@
 name             'labrea'
-maintainer       'YOUR_COMPANY_NAME'
-maintainer_email 'YOUR_EMAIL'
+maintainer       'Appriss Inc'
+maintainer_email 'dsledge@appriss.com'
 license          'All rights reserved'
 description      'Installs/Configures labrea'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
